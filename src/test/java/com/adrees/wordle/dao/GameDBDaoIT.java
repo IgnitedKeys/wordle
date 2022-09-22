@@ -10,6 +10,9 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -90,6 +93,21 @@ public class GameDBDaoIT {
      */
     @Test
     public void testGetAllGames() {
+        Game game1 = new Game();
+        game1.setAnswer("fancy");
+        game1.setFinished(false);
+        gameDao.add(game1);
+        
+        Game game2 = new Game();
+        game2.setAnswer("trees");
+        game2.setFinished(false);
+        gameDao.add(game2);
+        
+        List<Game> allGames = gameDao.getAllGames();
+        
+        assertEquals(2, allGames.size());
+        assertTrue(allGames.contains(game2));
+        assertTrue(allGames.contains(game1));
     }
 
     /**
@@ -97,6 +115,22 @@ public class GameDBDaoIT {
      */
     @Test
     public void testUpdateGame() {
+        
+        Game game = new Game();
+        game.setAnswer("fancy");
+        game.setFinished(false);
+        gameDao.add(game);
+        
+        Game fromDao = gameDao.getGameById(game.getGameId());
+        assertEquals(game, fromDao);
+        
+        game.setFinished(true);
+        gameDao.updateGame(game);
+        
+        assertNotEquals(game, fromDao);
+        
+        fromDao = gameDao.getGameById(game.getGameId());
+        assertEquals(game, fromDao);
     }
 
     /**
@@ -104,6 +138,23 @@ public class GameDBDaoIT {
      */
     @Test
     public void testDeleteGameById() {
+        Game game = new Game();
+        game.setAnswer("fancy");
+        game.setFinished(false);
+        gameDao.add(game);
+        
+        //create a round to check the full delete 
+        Round round = new Round();
+        
+        round.setGameId(game.getGameId());
+        round.setGuess("audio");
+        round.setResult("e:0:p:1");
+        roundDao.addRound(round);
+        
+        gameDao.deleteGameById(game.getGameId());
+        
+        Game fromDao = gameDao.getGameById(game.getGameId());
+        assertNull(fromDao);
     }
     
 }
