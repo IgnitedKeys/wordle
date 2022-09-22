@@ -9,12 +9,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  *
  * @author adrees
  */
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class RoundDBDaoIT {
     
     public RoundDBDaoIT() {

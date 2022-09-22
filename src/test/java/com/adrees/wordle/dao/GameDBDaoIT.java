@@ -4,18 +4,36 @@
  */
 package com.adrees.wordle.dao;
 
+import com.adrees.wordle.dto.Game;
+import com.adrees.wordle.dto.Round;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  *
  * @author adrees
  */
+
+//add Spring Test Framework
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class GameDBDaoIT {
+    
+    //add daos --delete unneeded ones later!
+    @Autowired
+    GameDao gameDao;
+    
+    @Autowired
+    RoundDao roundDao;
     
     public GameDBDaoIT() {
     }
@@ -28,8 +46,23 @@ public class GameDBDaoIT {
     public static void tearDownClass() {
     }
     
+    //delete all rounds to a game?
     @BeforeEach
     public void setUp() {
+        
+        
+        List<Game> games = gameDao.getAllGames();
+        for(Game game : games) {
+            //check this!
+            List<Round> rounds = roundDao.roundsForGame(game.getGameId());
+            for(Round round : rounds) {
+                roundDao.deleteRound(round);
+            }
+            
+            gameDao.deleteGameById(game.getGameId());
+        }
+        
+        
     }
     
     @AfterEach
@@ -37,10 +70,19 @@ public class GameDBDaoIT {
     }
 
     /**
-     * Test of add method, of class GameDBDao.
+     * Test of add method and getGameById , of class GameDBDao.
      */
     @Test
-    public void testAdd() {
+    public void testAddGameAndGetGameById() {
+        Game game = new Game();
+        
+        game.setAnswer("fancy");
+        game.setFinished(false);
+        gameDao.add(game);
+        
+        Game fromDao = gameDao.getGameById(game.getGameId());
+        
+        assertEquals(game, fromDao);
     }
 
     /**
@@ -48,13 +90,6 @@ public class GameDBDaoIT {
      */
     @Test
     public void testGetAllGames() {
-    }
-
-    /**
-     * Test of getGameById method, of class GameDBDao.
-     */
-    @Test
-    public void testGetGameById() {
     }
 
     /**
