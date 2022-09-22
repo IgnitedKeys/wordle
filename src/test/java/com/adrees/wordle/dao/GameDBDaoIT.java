@@ -57,10 +57,10 @@ public class GameDBDaoIT {
         List<Game> games = gameDao.getAllGames();
         for(Game game : games) {
             //check this!
-            List<Round> rounds = roundDao.roundsForGame(game.getGameId());
-            for(Round round : rounds) {
-                roundDao.deleteRound(round);
-            }
+//            List<Round> rounds = roundDao.roundsForGame(game.getGameId());
+//            for(Round round : rounds) {
+//                roundDao.deleteRound(round);
+//            }
             
             gameDao.deleteGameById(game.getGameId());
         }
@@ -148,7 +148,7 @@ public class GameDBDaoIT {
         
         round.setGameId(game.getGameId());
         round.setGuess("audio");
-        round.setResult("e:0:p:1");
+        round.setResult("e:-:p:0");
         roundDao.addRound(round);
         
         gameDao.deleteGameById(game.getGameId());
