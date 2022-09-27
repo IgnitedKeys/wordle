@@ -13,10 +13,13 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  *
@@ -36,7 +39,9 @@ public class WordleServiceImplIT {
     @Autowired
     RoundDao roundDao;
     
+    
     public WordleServiceImplIT() {
+
     }
     
     @BeforeClass
@@ -64,6 +69,16 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testGetAllGames() {
+        Game game = new Game();
+        game.setAnswer("three");
+        game.setFinished(false);
+        
+        Game testGame = gameDao.add(game);
+        
+        assertEquals(service.getAllGames().size(), 1);
+        assertTrue(service.getAllGames().contains(testGame));
+        
+        
     }
 
     /**
@@ -102,10 +117,10 @@ public class WordleServiceImplIT {
     }
 
     /**
-     * Test of checkIfGameOver method, of class WordleServiceImpl.
+     * Test of checkIfGameIsFinished method, of class WordleServiceImpl.
      */
     @Test
-    public void testCheckIfGameOver() {
+    public void testCheckIfGameFinished() {
     }
     
 }
