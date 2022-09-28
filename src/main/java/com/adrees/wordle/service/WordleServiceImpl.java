@@ -39,26 +39,12 @@ public class WordleServiceImpl implements WordleService {
     public WordleServiceImpl(GameDao gameDao, RoundDao roundDao) {
         this.gameDao = gameDao;
         this.roundDao = roundDao;
-//        ANSWER_FILE = "/dictionaries/wordle-answer.txt";
-//        WORDS_FILE = "/dictionaries/wordle-dictionary.txt";
     }
 
-//    public WordleServiceImpl(GameDao gameDao, RoundDao roundDao, String answerFile, String dictionaryFile) {
-//        this.gameDao = gameDao;
-//        this.roundDao = roundDao;
-//        ANSWER_FILE = answerFile;
-//        WORDS_FILE = dictionaryFile;
-//    }
     //Make sure answer is hidden ;-)
     @Override
     public List<Game> getAllGames() {
         List<Game> games = gameDao.getAllGames();
-//
-//        for (Game game : games) {
-//            if (game.isFinished() == false) {
-//                game.setAnswer("");
-//            }
-//        }
 
         return games;
     }
@@ -135,9 +121,6 @@ public class WordleServiceImpl implements WordleService {
     public List<Round> getRoundsForGame(int id) {
         List<Round> results = roundDao.roundsForGame(id);
 
-        //what if game doesn't exist?
-        //Game game = gameDao.getGameById(id);
-        //if no rounds in game yet
         if (results.isEmpty()) {
             results = new ArrayList<>();
         }
@@ -145,6 +128,7 @@ public class WordleServiceImpl implements WordleService {
     }
 
     //returns if Game is finished
+    //check Null exception!
     @Override
     public boolean checkIfGameIsFinished(int gameId) {
         try {
@@ -156,13 +140,11 @@ public class WordleServiceImpl implements WordleService {
     }
 
     private String getAnswerFromDictionary() throws FileNotFoundException {
-        //get random answer from dictionary
-        //how to store dictionary and possible answers
         loadWords();
-        //get a random index number
-        if (answers.isEmpty()) {
-            return null;
-        }
+
+//        if (answers.isEmpty()) {
+//            return null;
+//        }
 
         //check range of random (do I need to -1?)
         Random randomIndexNumber = new Random();
@@ -174,10 +156,8 @@ public class WordleServiceImpl implements WordleService {
     }
 
     private void loadWords() throws FileNotFoundException {
-        //scanner dictionary
-        //add to ArrayList
+       
         Scanner scanner;
-        //answers.add("aback");
 
         //check this try/catch-FileNotFoundException
         try {
@@ -194,10 +174,7 @@ public class WordleServiceImpl implements WordleService {
 
     }
 
-    //HOW TO GET WORD FROM DICTIONARY!!!
     private String verifyGuess(String guess) throws FileNotFoundException {
-        //check if guess is in dictionary
-        //slow list and check for now
         boolean wordIsValid = false;
 
         loadAllWords();
@@ -223,7 +200,7 @@ public class WordleServiceImpl implements WordleService {
                 }
             }
         }
-        //WHAT IF GUESS IS INVALID?
+        //if guess if invalid returns empty String
         if (!wordIsValid) {
             return "";
         }
@@ -262,11 +239,8 @@ public class WordleServiceImpl implements WordleService {
 
     private String getResult(Game game, String guess) {
         //exact (e) and partial (p)- show the index of each. otherwise - if none
-        //String e = "";
         Set<Integer> e = new HashSet<>();
-        //String p = "";
         Set<Integer> p = new HashSet<>();
-        // boolean found;
         String answer = game.getAnswer();
 
         List<Character> guessLetters = new ArrayList<>();
@@ -287,36 +261,23 @@ public class WordleServiceImpl implements WordleService {
                     if (guessLetters.indexOf(g) == answerLetters.indexOf(a)) {
                         //e += guessLetters.indexOf(g);
                         e.add(guessLetters.indexOf(g));
-                    } else if(!e.contains(guessLetters.indexOf(g))) {
+                    } else if (!e.contains(guessLetters.indexOf(g))) {
                         //p += guessLetters.indexOf(g);
                         p.add(guessLetters.indexOf(g));
                     }
                 }
             }
 
-//        for (int i = 0; i < guess.length(); i++) {
-//            if (guess.charAt(i) == answer.charAt(i)) {
-//                e += i;
-//            } else {
-//                found = false;
-//                for (int j = 0; j < guess.length() && !found; j++) {
-//                    if (guess.charAt(i) == answer.charAt(j)) {
-//                        found = true;
-//                        p += i;
-//                    }
-//                }
-//            }
-//        }
         }
         String exact = "";
-        for(Integer i : e) {
+        for (Integer i : e) {
             exact += i;
         }
         if (exact.isEmpty()) {
-           exact = "-";
+            exact = "-";
         }
         String partial = "";
-        for(Integer i : p) {
+        for (Integer i : p) {
             partial += i;
         }
         if (partial.isEmpty()) {

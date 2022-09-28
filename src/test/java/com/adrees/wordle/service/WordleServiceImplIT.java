@@ -7,21 +7,11 @@ package com.adrees.wordle.service;
 import com.adrees.wordle.dao.GameDao;
 import com.adrees.wordle.dao.RoundDao;
 import com.adrees.wordle.dto.Game;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import com.adrees.wordle.dto.Game;
 import com.adrees.wordle.dto.Round;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -163,9 +153,14 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testGetRoundsForGame() {
-
-        //what if game does not exist?
+        //returns null if game does not exist
+        assertNull(service.getGameById(1));
+        
+        //check if game doesn't have any rounds returns empty Array
         Game game = service.createGame();
+        List<Round> emptyRounds = service.getRoundsForGame(game.getGameId());
+        assertEquals(emptyRounds.size(), 0);
+        
         Round round = service.playRound(game.getGameId(), "claim");
         Round round2 = service.playRound(game.getGameId(), "claps");
 
@@ -190,7 +185,7 @@ public class WordleServiceImplIT {
 
         service.playRound(game.getGameId(), "claps");
         Game testGame = service.getGameById(game.getGameId());
-        assertEquals(testGame.isFinished(), true);
+        assertTrue(testGame.isFinished());
     }
 
     /**
@@ -236,7 +231,7 @@ public class WordleServiceImplIT {
      * when user word is invalid- should return an empty string
      */
     @Test
-    public void testVerifyGuess() {
+    public void testInvalidGuess() {
         Game game = service.createGame();
 
         Game testGame = service.getGameById(game.getGameId());
@@ -279,5 +274,21 @@ public class WordleServiceImplIT {
         Round round5 = service.playRound(testGame2.getGameId(), "shush");
         assertEquals(round5.getResult(), "e:01:p:-");
     }
+    
+    /**
+     * check if finished games can't be played
+     */
+    @Test
+    public void testPlayingFinishedGames() {
+        Game game = new Game();
+        game.setAnswer("learn");
+        game.setFinished(false);
+        gameDao.add(game);
+        
+        service.playRound(game.getGameId(), "learn");
+        //isFinished should be true
+        assertTrue(service.checkIfGameIsFinished(game.getGameId()));
+    }
+
 
 }
