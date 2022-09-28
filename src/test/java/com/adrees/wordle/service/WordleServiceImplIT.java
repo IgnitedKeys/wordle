@@ -8,59 +8,69 @@ import com.adrees.wordle.dao.GameDao;
 import com.adrees.wordle.dao.RoundDao;
 import com.adrees.wordle.dto.Game;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.adrees.wordle.dto.Game;
+import com.adrees.wordle.dto.Round;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  *
  * @author adrees
  */
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class WordleServiceImplIT {
-    
+
     @Autowired
     WordleService service;
-    
+
     @Autowired
     GameDao gameDao;
-    
+
     @Autowired
     RoundDao roundDao;
-    
-    
+
     public WordleServiceImplIT() {
 
     }
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpClass() {
     }
-    
-    @AfterClass
+
+    @AfterAll
     public static void tearDownClass() {
     }
-    
-    @Before
+
+    @BeforeEach
     public void setUp() {
         List<Game> games = service.getAllGames();
-        for(Game game : games) {
+        for (Game game : games) {
             service.deleteGame(game.getGameId());
         }
     }
-    
-    @After
+
+    @AfterEach
     public void tearDown() {
     }
 
@@ -69,16 +79,25 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testGetAllGames() {
+        //check if empty list returns 0
+        assertEquals(service.getAllGames().size(), 0);
+
         Game game = new Game();
         game.setAnswer("three");
         game.setFinished(false);
-        
+
         Game testGame = gameDao.add(game);
-        
-        assertEquals(service.getAllGames().size(), 1);
+
+        Game game2 = new Game();
+        game2.setAnswer("Froze");
+        game2.setFinished(true);
+
+        Game testGame2 = gameDao.add(game2);
+
+        assertEquals(service.getAllGames().size(), 2);
         assertTrue(service.getAllGames().contains(testGame));
-        
-        
+        assertTrue(service.getAllGames().contains(testGame2));
+
     }
 
     /**
@@ -86,27 +105,57 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testGetGameById() {
+        //check if game doesn't not exist returns null
+        assertNull(service.getGameById(1));
+
+        Game game = new Game();
+        game.setAnswer("grape");
+        game.setFinished(false);
+
+        gameDao.add(game);
+
+        Game testGame = service.getGameById(game.getGameId());
+
+        assertEquals(game, testGame);
+
     }
 
     /**
-     * Test of createGame method, of class WordleServiceImpl.
+     * Test of createGame and getGameById method, of class WordleServiceImpl.
      */
     @Test
-    public void testCreateGame() {
+    public void testCreateGameAndGetGameById() {
+        Game game = service.createGame();
+        //check if game isFinished is set to false
+        Game testGame = service.getGameById(game.getGameId());
+        assertEquals(testGame.isFinished(), false);
+        //make sure answer was set from list
+        assertNotNull(testGame.getAnswer());
     }
 
     /**
-     * Test of deleteGame method, of class WordleServiceImpl.
+     * Test of playRound method, of class WordleServiceImpl. Checks if
+     * user guess works from both dictionaries
      */
     @Test
-    public void testDeleteGame() {
-    }
+    public void testValidGuess() {
+        Game game = service.createGame();
 
-    /**
-     * Test of makeGuess method, of class WordleServiceImpl.
-     */
-    @Test
-    public void testMakeGuess() {
+        Game testGame = service.getGameById(game.getGameId());
+
+        Round round = service.playRound(testGame.getGameId(), "claim");
+
+        //check a word in answers list
+        assertEquals("claim", round.getGuess());
+
+        Game game2 = service.createGame();
+        Game testGame2 = service.getGameById(game2.getGameId());
+
+        Round round2 = service.playRound(testGame2.getGameId(), "claps");
+
+        //check a word in allwords list
+        assertEquals("claps", round2.getGuess());
+
     }
 
     /**
@@ -114,6 +163,17 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testGetRoundsForGame() {
+
+        //what if game does not exist?
+        Game game = service.createGame();
+        Round round = service.playRound(game.getGameId(), "claim");
+        Round round2 = service.playRound(game.getGameId(), "claps");
+
+        List<Round> rounds = service.getRoundsForGame(game.getGameId());
+
+        assertEquals(rounds.size(), 2);
+        assertTrue(rounds.contains(round));
+        assertTrue(rounds.contains(round2));
     }
 
     /**
@@ -121,6 +181,103 @@ public class WordleServiceImplIT {
      */
     @Test
     public void testCheckIfGameFinished() {
+        Game game = new Game();
+        game.setAnswer("claps");
+        game.setFinished(false);
+
+        Game fromDao = gameDao.add(game);
+        assertEquals(fromDao.isFinished(), false);
+
+        service.playRound(game.getGameId(), "claps");
+        Game testGame = service.getGameById(game.getGameId());
+        assertEquals(testGame.isFinished(), true);
+    }
+
+    /**
+     * Test of deleteGame method, of class WordleServiceImpl.
+     */
+    @Test
+    public void testDeleteGame() {
+        Game game = service.createGame();
+
+        //create a round to check the full delete 
+        Round round = new Round();
+
+        round.setGameId(game.getGameId());
+        round.setGuess("audio");
+        round.setResult("e:-:p:0");
+        roundDao.addRound(round);
+
+        service.deleteGame(game.getGameId());
+
+        Game fromDao = service.getGameById(game.getGameId());
+        assertNull(fromDao);
+
+    }
+
+    /**
+     * Test if deleteGame method works if game does not have rounds
+     */
+    @Test
+    public void testDeleteGameWithNoRounds() {
+
+        Game game = service.createGame();
+
+        service.deleteGame(game.getGameId());
+
+        Game fromDao = service.getGameById(game.getGameId());
+
+        assertNull(fromDao);
+
+    }
+
+    /**
+     * Test if helper method verifyGuess in playRound method
+     * when user word is invalid- should return an empty string
+     */
+    @Test
+    public void testVerifyGuess() {
+        Game game = service.createGame();
+
+        Game testGame = service.getGameById(game.getGameId());
+
+        Round round = service.playRound(testGame.getGameId(), "aaaaa");
+
+        assertEquals("", round.getGuess());
     }
     
+    /**
+     * Test getResult method as a part of playRound method. Check  result
+     * on exact match, partials, and duplicate letters
+     */
+    @Test
+    public void testGetResult() {
+        Game game = new Game();
+        game.setAnswer("claim");
+        game.setFinished(false);
+        Game testGame = gameDao.add(game);
+        
+        //partial
+        Round round1 = service.playRound(testGame.getGameId(), "blink");
+        assertEquals(round1.getResult(), "e:1:p:2");
+        //none
+        Round round2 = service.playRound(testGame.getGameId(), "sheep");
+        assertEquals(round2.getResult(), "e:-:p:-");
+        //all
+        Round round3 = service.playRound(testGame.getGameId(), "claim");
+        assertEquals(round3.getResult(), "e:01234:p:-");
+        
+        Game game2 = new Game();
+        game2.setAnswer("shell");
+        game2.setFinished(false);
+        Game testGame2 = gameDao.add(game2);
+        
+        //duplicate letter
+        Round round4 = service.playRound(testGame2.getGameId(), "learn");
+        assertEquals(round4.getResult(), "e:-:p:01");
+        
+        Round round5 = service.playRound(testGame2.getGameId(), "shush");
+        assertEquals(round5.getResult(), "e:01:p:-");
+    }
+
 }
