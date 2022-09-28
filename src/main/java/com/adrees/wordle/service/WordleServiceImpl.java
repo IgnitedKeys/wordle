@@ -12,9 +12,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
@@ -200,11 +202,11 @@ public class WordleServiceImpl implements WordleService {
 
         loadAllWords();
         loadWords();
-        
-        if(allWords.isEmpty()) {
+
+        if (allWords.isEmpty()) {
             return null;
         }
-        if(answers.isEmpty()){
+        if (answers.isEmpty()) {
             return null;
         }
 
@@ -214,52 +216,20 @@ public class WordleServiceImpl implements WordleService {
             }
         }
 
-        if(!wordIsValid) {
-            for(String answer: answers) {
-                if(answer.equals(guess)) {
+        if (!wordIsValid) {
+            for (String answer : answers) {
+                if (answer.equals(guess)) {
                     wordIsValid = true;
                 }
             }
         }
         //WHAT IF GUESS IS INVALID?
-        if(!wordIsValid) {
+        if (!wordIsValid) {
             return "";
         }
 
         return guess;
 
-    }
-
-    private String getResult(Game game, String guess) {
-        //exact (e) and partial (p)- show the index of each. otherwise - if none
-        String e = "";
-        String p = "";
-        boolean found;
-        String answer = game.getAnswer();
-
-        for (int i = 0; i < guess.length(); i++) {
-            if (guess.charAt(i) == answer.charAt(i)) {
-                e += i;
-            } else {
-                found = false;
-                for (int j = 0; j < guess.length() && !found; j++) {
-                    if (guess.charAt(i) == answer.charAt(j)) {
-                        found = true;
-                        p += i;
-                    }
-                }
-            }
-        }
-
-        if (e.isEmpty()) {
-            e = "-";
-        }
-        if (p.isEmpty()) {
-            p = "-";
-        }
-
-        String result = "e:" + e + ":p:" + p;
-        return result;
     }
 
     private void loadAllWords() throws FileNotFoundException {
@@ -288,6 +258,74 @@ public class WordleServiceImpl implements WordleService {
             game.setFinished(true);
             gameDao.updateGame(game);
         }
+    }
+
+    private String getResult(Game game, String guess) {
+        //exact (e) and partial (p)- show the index of each. otherwise - if none
+        //String e = "";
+        Set<Integer> e = new HashSet<>();
+        //String p = "";
+        Set<Integer> p = new HashSet<>();
+        // boolean found;
+        String answer = game.getAnswer();
+
+        List<Character> guessLetters = new ArrayList<>();
+        List<Character> answerLetters = new ArrayList<>();
+
+        for (int i = 0; i < guess.length(); i++) {
+            guessLetters.add(guess.charAt(i));
+        }
+
+        for (int i = 0; i < answer.length(); i++) {
+            answerLetters.add(answer.charAt(i));
+        }
+
+        for (Character g : guessLetters) {
+            for (Character a : answerLetters) {
+                if (g.equals(a)) {
+                    //if exact match
+                    if (guessLetters.indexOf(g) == answerLetters.indexOf(a)) {
+                        //e += guessLetters.indexOf(g);
+                        e.add(guessLetters.indexOf(g));
+                    } else if(!e.contains(guessLetters.indexOf(g))) {
+                        //p += guessLetters.indexOf(g);
+                        p.add(guessLetters.indexOf(g));
+                    }
+                }
+            }
+
+//        for (int i = 0; i < guess.length(); i++) {
+//            if (guess.charAt(i) == answer.charAt(i)) {
+//                e += i;
+//            } else {
+//                found = false;
+//                for (int j = 0; j < guess.length() && !found; j++) {
+//                    if (guess.charAt(i) == answer.charAt(j)) {
+//                        found = true;
+//                        p += i;
+//                    }
+//                }
+//            }
+//        }
+        }
+        String exact = "";
+        for(Integer i : e) {
+            exact += i;
+        }
+        if (exact.isEmpty()) {
+           exact = "-";
+        }
+        String partial = "";
+        for(Integer i : p) {
+            partial += i;
+        }
+        if (partial.isEmpty()) {
+            partial = "-";
+        }
+
+        String result = "e:" + exact + ":p:" + partial;
+        return result;
+
     }
 
 }
