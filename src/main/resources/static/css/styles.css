@@ -7,3 +7,66 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Author     : gavinlinnihan
 */
 
+.headerDiv {
+    height: 20%;
+    border-bottom: solid black 2px;
+}
+
+.homeHeader {
+    text-transform: capitalize;
+    font-weight: bolder;
+    text-align: center;
+    margin: 3%;
+}
+
+.homeDiv {
+    text-align: center;
+    padding: 10%;
+}
+
+.wordleBtn {
+    color: black;
+    border: 2px solid black;
+    background-color: white;
+    width: 15em;
+    border-radius: 16px;
+    font-size: 1.2em;
+    text-transform: capitalize;
+    
+}
+
+.homeBtn {
+    margin-bottom: 5%;
+}
+
+.box-ex{
+  width: 320px;
+
+  margin: 0 auto;
+  padding-top: 10px;
+
+}
+.box{
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  margin: 3px 1.5px;
+  display: inline-block;
+  background-color: white;   
+  color: black;
+  text-align: center;
+  border: 2px solid lightgrey;
+}
+.box span{
+  display: inline-block;
+  font-size: larger;
+  text-transform: uppercase;
+  font-weight: bold;
+
+
+
+  
+}
+.box-cols{
+  margin: 0 auto !important;
+}
