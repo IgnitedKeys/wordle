@@ -8,6 +8,7 @@ import com.adrees.wordle.service.WordleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  *
@@ -32,8 +33,14 @@ public class WordleController {
     
     @GetMapping("/playGame")
     public String playGame() {
-        
+        //needs to get answer
         return "play_game";
+    }
+    
+    @PostMapping("/playGame")
+    public String makeGuess() {
+        //needs to check guess with dictionary
+        return "/playGame";
     }
     
     

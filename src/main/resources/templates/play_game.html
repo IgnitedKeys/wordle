@@ -3,13 +3,17 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>play wordle</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link th:href="@{css/styles.css}" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet">
+<!--        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>-->
+<!--        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
     </head>
     <body>
         <div class="headerDiv"><h1 class="homeHeader">wordle</h1></div>
@@ -52,7 +56,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <div class="row">
                 <div class="col-md-12">
-                        <div class="box col-md-3"><span></span></div>
+                    <div class="box col-md-3"><span></span></div>
                     <div class="box col-md-3"><span></span></div>
                     <div class="box col-md-3"><span></span></div>
                     <div class="box col-md-3"><span></span></div>
@@ -70,8 +74,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
         </div>
 
+        
+
+        <!--        <div class="keyboard">
+                    <div class="keyboard__keys">
+                        <button type="button" class="keyboard__key"></button>
+                        <button type="button" class="keyboard__key keyboard__key--wide">
+                            <i class="material-icons">backspace</i>
+                        </button>
+                        <button type="button" class="keyboard__key keyboard__key--extra-wide">
+                            <i class="material-icons">space_bar</i>
+                        </button>
+                    </div>
+                </div>-->
+
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        
+
+        <script type="text/javascript" th:src="@{/js/keyboard.js}"></script>
     </body>
 </html>
